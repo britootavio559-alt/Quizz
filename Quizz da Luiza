@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Royale: A Jornada de Ofelia</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lilita+One&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Fonte que imita a do Clash Royale */
+        body {
+            font-family: 'Lilita One', cursive;
+            background: url('https://i.imgur.com/2X3Y2c5.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        /* Efeito de relevo no texto, como no jogo */
+        .text-clash-title {
+            color: #ffde31;
+            -webkit-text-stroke: 3px #964300;
+            text-shadow: 4px 4px 0px #000000;
+        }
+
+        .text-clash-body {
+            color: #ffffff;
+            text-shadow: 2px 2px 0px #000000;
+        }
+
+        .text-clash-score {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 6rem;
+            color: #ffffff;
+            -webkit-text-stroke: 4px #000;
+        }
+
+        /* Painel principal - como a tela inicial do jogo */
+        .clash-panel {
+            background: url('https://i.imgur.com/G2x5gcv.png') no-repeat center center;
+            background-size: 100% 100%;
+            border-radius: 20px;
+            padding: 2rem 3rem 3rem 3rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* Cartão de pergunta - como uma carta do jogo */
+        .clash-card {
+            background: url('https://i.imgur.com/s6VtX1s.png') no-repeat center center;
+            background-size: 100% 100%;
+            padding: 70px 30px 30px 30px;
+            position: relative;
+        }
+        
+        .batman-icon {
+            position: absolute;
+            top: 18px;
+            left: 25px;
+            width: 80px;
+            height: 80px;
+            background: url('https://i.imgur.com/eBf2g6V.jpeg') no-repeat center center;
+            background-size: cover;
+            border-radius: 50%;
+            border: 5px solid #4a3c35;
+            box-shadow: 0 0 10px rgba(0,0,0,0.7);
+        }
+
+        /* Botão verde de Batalha */
+        .btn-clash-green {
+            background: linear-gradient(to bottom, #74e302, #50a000);
+            border-radius: 10px;
+            border: 2px solid #2d6b1d;
+            box-shadow: 0 5px 0 #2d6b1d;
+            transition: all 0.1s ease-in-out;
+        }
+        .btn-clash-green:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 0 #2d6b1d;
+        }
+        .btn-clash-green:active {
+            transform: translateY(2px);
+            box-shadow: 0 3px 0 #2d6b1d;
+        }
+
+        /* Botão azul de opção de resposta */
+        .btn-clash-blue {
+            background: linear-gradient(to bottom, #499dff, #1e71da);
+            border-radius: 10px;
+            border: 2px solid #1c4587;
+            box-shadow: 0 5px 0 #1c4587;
+            transition: all 0.1s ease-in-out;
+            text-align: left;
+            padding: 15px 20px;
+        }
+        .btn-clash-blue:hover {
+            filter: brightness(1.1);
+        }
+        .btn-clash-blue:active {
+            transform: translateY(2px);
+            box-shadow: 0 3px 0 #1c4587;
+        }
+
+        .btn-clash-blue.correct {
+            background: linear-gradient(to bottom, #74e302, #50a000);
+            border-color: #2d6b1d;
+            box-shadow: 0 5px 0 #2d6b1d;
+        }
+        .btn-clash-blue.incorrect {
+            background: linear-gradient(to bottom, #ff5757, #d32020);
+            border-color: #8c1616;
+            box-shadow: 0 5px 0 #8c1616;
+        }
+        
+        /* Ocultar elementos */
+        .hidden {
+            display: none;
+        }
+        
+        /* Animações */
+        .animate-pop-in {
+            animation: pop-in 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+        }
+        @keyframes pop-in {
+            from { transform: scale(0.7); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    <section id="hero-section" class="clash-panel w-full max-w-2xl text-center animate-pop-in">
+        <h1 class="text-clash-title text-6xl md:text-7xl tracking-wider">Quiz Royale</h1>
+        <p class="text-clash-body text-2xl mt-4 mb-8">Desvende os mistérios de Ofelia e prove seu valor na arena!</p>
+        <button id="start-btn" class="btn-clash-green text-white text-3xl font-bold px-16 py-4 rounded-lg tracking-widest">BATALHA!</button>
+    </section>
+
+    <div id="quiz-container" class="hidden w-full max-w-2xl">
+        <div class="clash-card p-6 mx-auto animate-pop-in">
+            <div class="batman-icon"></div>
+            <h2 id="question" class="text-clash-title text-4xl mb-6 text-center mt-12"></h2>
+            <div id="options" class="space-y-4">
+                </div>
+            <button id="next-btn" class="btn-clash-green w-full text-white text-2xl font-bold py-4 mt-6 hidden">PRÓXIMA CARTA</button>
+        </div>
+    </div>
+
+    <div id="result-container" class="hidden w-full max-w-2xl">
+        <div class="clash-panel text-center animate-pop-in">
+            <img src="https://i.imgur.com/P05L3Qo.jpeg" alt="Troféu" class="w-40 h-40 mx-auto rounded-full border-8 border-yellow-600 mb-4">
+            <h2 class="text-clash-title text-6xl">Resultado Final</h2>
+            <p id="score" class="text-clash-score my-4"></p>
+            <p class="text-clash-body text-2xl mb-8">Batalha concluída com maestria! Desafie novamente para ganhar mais coroas.</p>
+            <button id="restart-btn" class="btn-clash-green text-white text-3xl font-bold px-12 py-4 rounded-lg">NOVA BATALHA</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { question: "1. Qual o nome da jovem sonhadora, protagonista da história?", options: ["Carmen", "Mercedes", "Ofelia", "Isabel"], answer: 2 },
+            { question: "2. O que o Fauno instrui Ofelia a desenhar na parede do seu quarto?", options: ["Um círculo mágico", "Uma janela", "O rosto de um sapo", "Uma porta"], answer: 3 },
+            { question: "3. Quem é segurado firmemente por Mercedes e Pedro durante um procedimento tenso?", options: ["O Guerrilheiro", "Francés", "O Fauno", "O Médico"], answer: 1 },
+            { question: "4. (Pegadinha) Ao abrir o livro, Ofelia se vê numa sala com iguarias e três nichos. O que havia DENTRO dos nichos?", options: ["Chaves de ouro", "Adagas de prata", "Pedras de âmbar", "O texto não especifica"], answer: 3 },
+            { question: "5. Que item Ofelia precisa recuperar ao enfrentar um sapo?", options: ["Uma chave dourada", "Um anel de prata", "Pedras de âmbar", "Uma adaga mágica"], answer: 2 },
+            { question: "6. Qual é a principal ferramenta que o médico prepara para a cirurgia de Francés?", options: ["Um bisturi delicado", "Uma agulha e linha", "Uma serra de aço inoxidável", "Pinças de titânio"], answer: 2 },
+            { question: "7. Quem é a mãe de Ofelia, cuja saúde se deteriora ao longo da narrativa?", options: ["Mercedes", "Carmen", "Isabel", "Não é mencionado"], answer: 1 },
+            { question: "8. (Difícil) A dualidade da história é mostrada pelo contraste entre a fantasia de Ofelia e a dura realidade. Qual cena melhor representa essa dualidade?", options: ["Ofelia com o livro e os soldados na floresta", "O banquete mágico e a escassez de comida", "A abertura da porta mágica e a cirurgia de Francés", "O Fauno e o Médico"], answer: 2 },
+            { question: "9. (Pegadinha) Qual dos personagens abaixo NÃO é explicitamente citado segurando Francés durante a cirurgia?", options: ["Mercedes", "O Médico", "Pedro", "Todos citados o seguraram"], answer: 1 },
+            { question: "10. O que a presença de soldados e a captura de um guerrilheiro refletem no ambiente da história?", options: ["Um festival local", "Paz e prosperidade", "Clima de opressão e conflito", "Uma caça a criaturas mágicas"], answer: 2 },
+            { question: "11. O que o ato de Ofelia traçar uma nova porta no topo de um túnel simboliza?", options: ["Sua tentativa de fuga", "Sua rendição ao destino", "Sua determinação em enfrentar desafios", "Um erro de percurso"], answer: 2 },
+            { question: "12. (Difícil) Qual é o tom de voz do médico ao explicar o procedimento a Francés?", options: ["Alto e autoritário", "Sussurrante e com medo", "Alegre e otimista", "Baixo e sério"], answer: 3 },
+            { question: "13. Qual personagem observa Ofelia do outro lado da mesa na ilustração do livro?", options: ["O Fauno", "Um sapo gigante", "Uma figura humana pálida", "Sua mãe, Carmen"], answer: 2 },
+            { question: "14. (Difícil) A busca de Ofelia por um mundo mágico é, primariamente, uma forma de:", options: ["Ganhar poderes para lutar na guerra", "Encontrar um tesouro perdido", "Escapar da brutalidade da realidade ao seu redor", "Ajudar seu pai a vencer a guerra"], answer: 2 },
+            { question: "15. (Pegadinha) O corredor que se abre para Ofelia é descrito como esculpido na rocha. Que criatura provavelmente fez essa escultura?", options: ["O Fauno", "O Sapo", "Dragões Ancestrais", "A história não informa"], answer: 3 }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        const startBtn = document.getElementById('start-btn');
+        const heroSection = document.getElementById('hero-section');
+        const quizContainer = document.getElementById('quiz-container');
+        const resultContainer = document.getElementById('result-container');
+        const questionEl = document.getElementById('question');
+        const optionsEl = document.getElementById('options');
+        const nextBtn = document.getElementById('next-btn');
+        const scoreEl = document.getElementById('score');
+        const restartBtn = document.getElementById('restart-btn');
+
+        startBtn.addEventListener('click', startQuiz);
+        nextBtn.addEventListener('click', loadNextQuestion);
+        restartBtn.addEventListener('click', restartQuiz);
+
+        function startQuiz() {
+            heroSection.classList.add('hidden');
+            resultContainer.classList.add('hidden');
+            quizContainer.classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQuestionIndex];
+            questionEl.textContent = q.question;
+            optionsEl.innerHTML = '';
+            q.options.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-clash-blue w-full text-clash-body text-xl';
+                btn.textContent = opt;
+                btn.addEventListener('click', () => selectAnswer(i, btn, q.answer));
+                optionsEl.appendChild(btn);
+            });
+            nextBtn.classList.add('hidden');
+        }
+
+        function selectAnswer(selectedIndex, btn, correctAnswerIndex) {
+            const buttons = optionsEl.querySelectorAll('button');
+            buttons.forEach((b, i) => {
+                b.disabled = true;
+                if (i === correctAnswerIndex) {
+                    b.classList.add('correct');
+                } else if (i === selectedIndex) {
+                    b.classList.add('incorrect');
+                }
+            });
+
+            if (selectedIndex === correctAnswerIndex) {
+                score++;
+            }
+            nextBtn.classList.remove('hidden');
+        }
+
+        function loadNextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex >= questions.length) {
+                showResult();
+            } else {
+                loadQuestion();
+            }
+        }
+
+        function showResult() {
+            quizContainer.classList.add('hidden');
+            resultContainer.classList.remove('hidden');
+            scoreEl.textContent = `${score} / ${questions.length}`;
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            resultContainer.classList.add('hidden');
+            heroSection.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
